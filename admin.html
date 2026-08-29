@@ -1,116 +1,25 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Painel Admin - aLojinha</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white min-h-screen p-8">
-  <div class="max-w-6xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-yellow-400">🛠️ Painel de Controle - aLojinha</h1>
-    
-    <!-- Senha -->
-    <div class="bg-gray-800 p-4 rounded-lg mb-6 flex items-center gap-4">
-      <label class="font-bold text-yellow-400"> Senha:</label>
-      <input type="password" id="adminSenha" placeholder="Digite a senha do admin" class="bg-gray-700 p-2 rounded text-white flex-1 border border-gray-600 focus:border-yellow-400 outline-none">
+<!-- Transferência de Produtos -->
+<div class="bg-gray-800 p-6 rounded-lg mb-6 border-2 border-yellow-500">
+  <h2 class="text-2xl font-bold mb-4 text-yellow-400">🔄 Transferir Produtos</h2>
+  <p class="text-gray-400 mb-4">Mova produtos do coleposte-db para aLojinha (apenas com imagem)</p>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div>
+      <label class="block text-sm font-bold mb-2">Valor Máximo (R$)</label>
+      <input type="number" id="valorLimite" placeholder="100" class="bg-gray-700 p-2 rounded text-white w-full" value="100">
     </div>
-
-    <!-- Filtros -->
-    <div class="bg-gray-800 p-6 rounded-lg mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-      <input type="number" id="minPrice" placeholder="Preço Mínimo" class="bg-gray-700 p-2 rounded text-white">
-      <input type="number" id="maxPrice" placeholder="Preço Máximo" class="bg-gray-700 p-2 rounded text-white">
-      <input type="text" id="seller" placeholder="Seller" class="bg-gray-700 p-2 rounded text-white">
-      <select id="platform" class="bg-gray-700 p-2 rounded text-white">
-        <option value="">Todas</option>
-        <option value="shopee">Shopee</option>
-        <option value="amazon">Amazon</option>
-      </select>
-      <button onclick="buscarProdutos()" class="md:col-span-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">🔍 Buscar</button>
+    <div>
+      <label class="block text-sm font-bold mb-2">Lote (quantidade)</label>
+      <input type="number" id="loteSize" placeholder="50" class="bg-gray-700 p-2 rounded text-white w-full" value="50">
     </div>
-
-    <!-- Lista -->
-    <div class="bg-gray-800 p-6 rounded-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Selecione até 12 produtos</h2>
-        <span id="contador" class="bg-yellow-500 text-black px-3 py-1 rounded-full font-bold">0 / 12</span>
-      </div>
-      
-      <div id="listaProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-2">
-        <p class="text-gray-400 col-span-3 text-center py-8">Use os filtros acima.</p>
-      </div>
-
-      <button onclick="salvarVitrine()" class="mt-6 w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded text-lg">✅ PUBLICAR NA VITRINE</button>
+    <div class="flex items-end">
+      <button onclick="moverProdutos()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded">
+        🚀 MOVER PRODUTOS
+      </button>
     </div>
   </div>
 
-  <script>
-    const API_URL = window.location.origin; 
-    let selecionados = [];
-
-    async function buscarProdutos() {
-      const min = document.getElementById('minPrice').value || 0;
-      const max = document.getElementById('maxPrice').value || 99999;
-      const seller = document.getElementById('seller').value;
-      const platform = document.getElementById('platform').value;
-
-      const url = `${API_URL}/api/admin/produtos?min=${min}&max=${max}&seller=${seller}&platform=${platform}`;
-      const res = await fetch(url);
-      const produtos = await res.json();
-
-      const container = document.getElementById('listaProdutos');
-      container.innerHTML = '';
-
-      produtos.forEach(p => {
-        const div = document.createElement('div');
-        div.className = "bg-gray-700 p-4 rounded flex items-start gap-3 border border-gray-600 hover:border-yellow-400 transition";
-        div.innerHTML = `
-          <input type="checkbox" class="mt-1 w-5 h-5 accent-yellow-500" value="${p.id}" onchange="toggleProduto(this, '${p.id}', '${p.titulo}', '${p.preco}', '${p.imagem}', '${p.link}', '${p.plataforma}')">
-          <div class="flex-1">
-            <img src="${p.imagem}" class="w-full h-32 object-cover rounded mb-2 bg-gray-600">
-            <h3 class="font-bold text-sm mb-1 line-clamp-2">${p.titulo}</h3>
-            <p class="text-yellow-400 font-bold">R$ ${parseFloat(p.preco).toFixed(2)}</p>
-            <p class="text-xs text-gray-400 mt-1">${p.plataforma.toUpperCase()} | ${p.seller}</p>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function toggleProduto(checkbox, id, titulo, preco, imagem, link, plataforma) {
-      if (checkbox.checked) {
-        if (selecionados.length >= 12) {
-          alert("Máximo de 12 produtos!");
-          checkbox.checked = false;
-          return;
-        }
-        selecionados.push({ id, titulo, preco, imagem, link, plataforma });
-      } else {
-        selecionados = selecionados.filter(p => p.id !== id);
-      }
-      document.getElementById('contador').innerText = `${selecionados.length} / 12`;
-    }
-
-    async function salvarVitrine() {
-      const senha = document.getElementById('adminSenha').value;
-      if (!senha) { alert("Digite a senha!"); return; }
-      if (selecionados.length === 0) { alert("Selecione produtos!"); return; }
-
-      const res = await fetch(`${API_URL}/api/admin/salvar_vitrine`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${senha}` },
-        body: JSON.stringify(selecionados)
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        alert("✅ Vitrine atualizada!");
-        selecionados = [];
-        document.getElementById('contador').innerText = "0 / 12";
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-      } else {
-        alert("Erro: " + data.error);
-      }
-    }
-  </script>
-</body>
-</html>
+  <div id="resultadoMover" class="bg-gray-900 p-4 rounded hidden">
+    <p class="text-green-400 font-bold" id="msgMover"></p>
+  </div>
+</div>
