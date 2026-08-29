@@ -1,0 +1,13 @@
+CREATE TABLE produtos_pool (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  titulo TEXT NOT NULL,
+  preco TEXT NOT NULL,           -- Mantém como "R$ 59,90" pra economizar espaço
+  preco_numero REAL,             -- Campo extra com o valor numérico (59.90) pra filtrar
+  imagem TEXT,                   -- URL da imagem
+  link_afiliado TEXT NOT NULL,   -- Link já com ID de afiliado
+  plataforma TEXT NOT NULL,      -- 'shopee', 'amazon', 'magalu'
+  nicho TEXT,                    -- 'casa', 'beleza', 'moda', etc.
+  emoji TEXT,                    -- Emoji do produto (🔥, , etc.)
+  ativo INTEGER DEFAULT 1,       -- 1 = visível, 0 = escondido
+  criado_em TEXT DEFAULT CURRENT_TIMESTAMP
+);
