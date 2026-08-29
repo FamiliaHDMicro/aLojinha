@@ -23,3 +23,45 @@
     <p class="text-green-400 font-bold" id="msgMover"></p>
   </div>
 </div>
+async function moverProdutos() {
+  const senha = document.getElementById('adminSenha').value;
+  if (!senha) { alert("Digite a senha!"); return; }
+
+  const valorLimite = document.getElementById('valorLimite').value || 100;
+  const lote = document.getElementById('loteSize').value || 50;
+
+  if (!confirm(`Mover produtos até R$ ${valorLimite} (lote de ${lote})?`)) return;
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerText = "⏳ Movendo...";
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/mover-produtos`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${senha}` 
+      },
+      body: JSON.stringify({ valorLimite, lote })
+    });
+
+    const data = await res.json();
+    
+    const resultadoDiv = document.getElementById('resultadoMover');
+    const msgDiv = document.getElementById('msgMover');
+    
+    resultadoDiv.classList.remove('hidden');
+    msgDiv.innerText = data.mensagem;
+    
+    if (data.erros > 0) {
+      msgDiv.innerHTML += `<br class="text-red-400">️ ${data.erros} erros na transferência`;
+    }
+
+  } catch (e) {
+    alert("Erro ao mover: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "🚀 MOVER PRODUTOS";
+  }
+}
