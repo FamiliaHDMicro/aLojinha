@@ -5,29 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>aLojinha - Ofertas Relâmpago</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ml: {
+              bg: '#0f1724',
+              card: '#1e293b',
+              primary: '#2563eb',
+              primaryHover: '#3b82f6',
+              success: '#10b981',
+              text: '#f5f7fa',
+              textMuted: '#94a3b8',
+              border: '#334155'
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-in { animation: slideIn 0.4s ease-out; }
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-ml-bg text-ml-text min-h-screen font-sans">
   
-  <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-50">
+  <header class="bg-ml-primary p-4 shadow-lg sticky top-0 z-50">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <h1 class="text-2xl font-bold flex items-center gap-2">🛍️ aLojinha</h1>
-      <span class="text-xs bg-yellow-400 text-blue-900 px-2 py-1 rounded font-bold animate-pulse">OFERTAS A CADA 4H</span>
+      <h1 class="text-2xl font-bold flex items-center gap-2 text-white">🛍️ aLojinha</h1>
+      <span class="text-xs bg-yellow-400 text-blue-900 px-3 py-1 rounded-full font-bold animate-pulse">OFERTAS A CADA 4H</span>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto p-4">
-    <div id="loading" class="text-center py-20 text-gray-500">Carregando ofertas...</div>
+    <div id="loading" class="text-center py-20 text-ml-textMuted text-lg">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-ml-primary mx-auto mb-4"></div>
+      Buscando as melhores ofertas...
+    </div>
 
     <div id="vitrine" class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     <div id="vitrine-mobile" class="md:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-hide"></div>
   </main>
 
-  <footer class="bg-gray-900 text-gray-400 text-center p-6 mt-8 text-sm">
-    <p>© 2026 aLojinha. Todos os direitos reservados.</p>
+  <footer class="bg-ml-card text-ml-textMuted text-center p-6 mt-8 border-t border-ml-border">
+    <p class="text-sm">© 2026 aLojinha • Ofertas atualizadas automaticamente a cada 4 horas</p>
+    <p class="text-xs mt-1">Feito com 💙 por Luis & Qwen</p>
   </footer>
 
   <script>
@@ -39,8 +66,9 @@
         const produtos = await res.json();
         document.getElementById('loading').classList.add('hidden');
         
-        if (produtos.length === 0) {
-          document.getElementById('vitrine').innerHTML = '<p class="col-span-full text-center py-10">Nenhuma oferta agora. Volte em 4h!</p>';
+        if (!produtos || produtos.length === 0) {
+          document.getElementById('vitrine').innerHTML = '<p class="col-span-full text-center py-10 text-ml-textMuted">Nenhuma oferta agora. Volte em 4h!</p>';
+          document.getElementById('vitrine').classList.remove('hidden');
           return;
         }
 
@@ -49,20 +77,25 @@
         containerDesktop.classList.remove('hidden');
 
         produtos.forEach(p => {
-          const badge = p.plataforma === 'shopee' 
-            ? '<span class="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded">Shopee</span>'
-            : '<span class="absolute top-2 left-2 bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded">Amazon</span>';
+          let badgeClass = "bg-gray-700";
+          let lojaNome = p.plataforma || "Loja";
+          if(lojaNome.includes('shopee')) { badgeClass = "bg-orange-500"; }
+          else if(lojaNome.includes('amazon')) { badgeClass = "bg-yellow-500 text-black"; }
+          else if(lojaNome.includes('magalu')) { badgeClass = "bg-blue-500"; }
+          else if(lojaNome.includes('mercado')) { badgeClass = "bg-yellow-400 text-black"; }
 
           const cardHTML = `
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col snap-center min-w-[85vw] md:min-w-0">
+            <div class="bg-ml-card rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col snap-center min-w-[85vw] md:min-w-0 border border-ml-border animate-slide-in">
               <div class="relative">
-                ${badge}
-                <img src="${p.imagem}" alt="${p.titulo}" class="w-full h-48 object-cover bg-gray-200">
+                <span class="absolute top-2 left-2 ${badgeClass} text-white text-xs font-bold px-2 py-1 rounded shadow">${lojaNome}</span>
+                <img src="${p.imagem}" alt="${p.titulo}" class="w-full h-48 object-cover bg-gray-800" onerror="this.src='https://via.placeholder.com/400x300?text=Sem+Imagem'">
               </div>
               <div class="p-4 flex-1 flex flex-col">
-                <h3 class="font-semibold text-gray-800 line-clamp-2 mb-2 flex-1">${p.titulo}</h3>
-                <p class="text-2xl font-bold text-green-600 mb-4">R$ ${parseFloat(p.preco).toFixed(2)}</p>
-                <a href="${p.link_afiliado}" target="_blank" rel="noopener noreferrer" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-center transition-colors flex items-center justify-center gap-2">COMPRAR AGORA 🛒</a>
+                <h3 class="font-semibold text-ml-text line-clamp-2 mb-2 flex-1 text-sm leading-relaxed">${p.titulo}</h3>
+                <p class="text-2xl font-bold text-ml-success mb-4">R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}</p>
+                <a href="${p.link_afiliado}" target="_blank" rel="noopener noreferrer" class="w-full bg-ml-primary hover:bg-ml-primaryHover text-white font-bold py-3 px-4 rounded-lg text-center transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-900/50">
+                  COMPRAR AGORA 🛒
+                </a>
               </div>
             </div>
           `;
@@ -71,9 +104,10 @@
         });
       } catch (error) {
         console.error("Erro:", error);
-        document.getElementById('loading').innerText = "Erro ao carregar.";
+        document.getElementById('loading').innerText = "Erro ao carregar ofertas. Tente recarregar a página.";
       }
     }
+    
     carregarVitrine();
   </script>
 </body>
