@@ -2,8 +2,10 @@ name = "alojinha"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-# Aqui conecta o seu D1
 [[d1_databases]]
 binding = "alojinha"
 database_name = "coleposte-db"
 database_id = "fa0ab338-e271-4e77-bf0d-0faae80a30f7"
+
+[vars]
+ADMIN_PASSWORD = "alojinha2026"
