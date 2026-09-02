@@ -58,7 +58,7 @@ const INDEX_HTML = `<!DOCTYPE html>
     const API_URL = window.location.origin;
     async function carregarVitrine() {
       try {
-        const res = await fetch(API_URL + '/api/produtos');
+        const res = await fetch(API_URL + '/api/produtos_pool');
         const produtos = await res.json();
         document.getElementById('loading').classList.add('hidden');
         if (!produtos || produtos.length === 0) {
