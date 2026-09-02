@@ -4,8 +4,8 @@ compatibility_date = "2024-01-01"
 
 [[d1_databases]]
 binding = "alojinha"
-database_name = "coleposte-db"
-database_id = "fa0ab338-e271-4e77-bf0d-0faae80a30f7"
+database_name = "alojinha"
+database_id = "aca85cb1-0ff7-4c31-91a9-9c82db9ac3cb"
 
 [vars]
 ADMIN_PASSWORD = "alojinha2026"
