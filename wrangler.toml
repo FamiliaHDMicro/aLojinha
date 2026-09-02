@@ -11,9 +11,3 @@ database_id = "aca85cb1-0ff7-4c31-91a9-9c82db9ac3cb"
 AMAZON_TAG = "coloposte-20"
 SHOPEE_AFF_ID = "18338650355"
 MAGALU_STORE = "magazinehdmicroloja"
-
-[env.production.secrets]
-ADMIN_PASSWORD = "seu_valor_aqui"
-CHAT_ID = "seu_valor_aqui"
-DATABASE_ID = "seu_valor_aqui"
-TELEGRAM_BOT_TOKEN = "seu_valor_aqui"
