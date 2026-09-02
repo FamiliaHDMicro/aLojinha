@@ -1,4 +1,4 @@
-name = "coleposte-cron"
+name = "alojinha"
 main = "worker.js"
 compatibility_date = "2024-12-01"
 
