@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>aLojinha - Painel de Controle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ml: {
+              bg: '#0f1724',
+              card: '#1e293b',
+              cardHover: '#253349',
+              primary: '#2563eb',
+              primaryHover: '#3b82f6',
+              success: '#10b981',
+              warning: '#f59e0b',
+              danger: '#ef4444',
+              text: '#f5f7fa',
+              textMuted: '#94a3b8',
+              border: '#334155',
+              accent: '#06b6d4'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-in { animation: slideIn 0.4s ease-out; }
+  </style>
+</head>
+<body class="bg-ml-bg text-ml-text min-h-screen font-sans">
+  
+  <header class="bg-ml-primary p-4 shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">🛍️</div>
+        <div>
+          <h1 class="text-xl font-bold text-white">aLojinha - Painel de Controle</h1>
+          <p class="text-xs text-blue-200">Gerenciamento inteligente de ofertas</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs bg-yellow-400 text-blue-900 px-3 py-1 rounded-full font-bold">ADMIN</span>
+        <button onclick="window.open('/', '_blank')" class="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full transition">
+          Ver Site 🌐
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 space-y-6">
+    
+    <!-- Stats Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-ml-card rounded-xl p-5 border border-ml-border hover:border-ml-primary transition animate-slide-in">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-ml-textMuted text-sm">Produtos na Vitrine</span>
+          <span class="text-2xl">📦</span>
+        </div>
+        <div class="text-3xl font-bold text-ml-success" id="totalVitrine">...</div>
+        <div class="text-xs text-ml-textMuted mt-1">Exibidos agora (ativo=2)</div>
+      </div>
+
+      <div class="bg-ml-card rounded-xl p-5 border border-ml-border hover:border-ml-primary transition animate-slide-in" style="animation-delay: 0.1s">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-ml-textMuted text-sm">No Pool (Aguardando)</span>
+          <span class="text-2xl">📥</span>
+        </div>
+        <div class="text-3xl font-bold text-ml-warning" id="totalPool">...</div>
+        <div class="text-xs text-ml-textMuted mt-1">Aguardando curadoria (ativo=1)</div>
+      </div>
+
+      <div class="bg-ml-card rounded-xl p-5 border border-ml-border hover:border-ml-primary transition animate-slide-in" style="animation-delay: 0.2s">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-ml-textMuted text-sm">Status do Robozim</span>
+          <span class="text-2xl">🤖</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-ml-success animate-pulse"></div>
+          <span class="text-xl font-bold text-ml-success">Ativo</span>
+        </div>
+        <div class="text-xs text-ml-textMuted mt-1">Capturando em tempo real</div>
+      </div>
+
+      <div class="bg-ml-card rounded-xl p-5 border border-ml-border hover:border-ml-primary transition animate-slide-in" style="animation-delay: 0.3s">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-ml-textMuted text-sm">Rodízio Atual</span>
+          <span class="text-2xl">⏰</span>
+        </div>
+        <div class="text-xl font-bold text-ml-accent" id="blocoAtual">--:--</div>
+        <div class="text-xs text-ml-textMuted mt-1">Próxima troca em <span id="proximaTroca">--</span></div>
+      </div>
+    </section>
+
+    <!-- Transferência em Lote -->
+    <section class="bg-ml-card rounded-xl p-6 border border-ml-border animate-slide-in" style="animation-delay: 0.4s">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-ml-primary/20 flex items-center justify-center text-xl">🔄</div>
+        <div>
+          <h2 class="text-lg font-bold text-yellow-400">Transferir Produtos do Pool</h2>
+          <p class="text-sm text-ml-textMuted">Mova produtos de <code class="bg-ml-bg px-2 py-0.5 rounded text-ml-accent">produtos_pool</code> (ativo 1) para a vitrine (ativo 2)</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-bold mb-2 text-ml-textMuted">📊 Lote (quantidade)</label>
+          <input type="number" id="loteSize" placeholder="50" 
+                 class="bg-ml-bg border border-ml-border rounded-lg p-3 text-white w-full focus:border-ml-primary focus:outline-none focus:ring-2 focus:ring-ml-primary/20 transition" 
+                 value="50">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-2 text-ml-textMuted">🔑 Senha Admin</label>
+          <input type="password" id="adminSenha" placeholder="Sua senha" 
+                 class="bg-ml-bg border border-ml-border rounded-lg p-3 text-white w-full focus:border-ml-primary focus:outline-none focus:ring-2 focus:ring-ml-primary/20 transition">
+        </div>
+        <div class="flex items-end">
+          <button onclick="moverProdutos()" 
+                  class="w-full bg-ml-primary hover:bg-ml-primaryHover text-white font-bold py-3 px-4 rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-900/50">
+            🚀 MOVER PRODUTOS
+          </button>
+        </div>
+      </div>
+
+      <div id="resultadoMover" class="bg-ml-bg p-4 rounded-lg hidden border border-ml-border">
+        <p class="font-bold" id="msgMover"></p>
+      </div>
+    </section>
+
+    <!-- Status do Sistema -->
+    <section class="bg-ml-card rounded-xl p-6 border border-ml-border animate-slide-in" style="animation-delay: 0.5s">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-ml-accent/20 flex items-center justify-center text-xl">⚙️</div>
+        <div>
+          <h2 class="text-lg font-bold text-ml-accent">Configuração Atual</h2>
+          <p class="text-sm text-ml-textMuted">Conexão direta com o banco D1</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="flex items-center justify-between p-4 bg-ml-bg rounded-lg border border-ml-border">
+          <div>
+            <div class="font-bold text-sm">Banco de Dados</div>
+            <div class="text-xs text-ml-textMuted font-mono">alojinha (aca85cb1...)</div>
+          </div>
+          <span class="text-ml-success font-bold text-sm">✓ Conectado</span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 bg-ml-bg rounded-lg border border-ml-border">
+          <div>
+            <div class="font-bold text-sm">Tabela Principal</div>
+            <div class="text-xs text-ml-textMuted font-mono">produtos_pool</div>
+          </div>
+          <span class="text-ml-success font-bold text-sm">✓ Ativa</span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 bg-ml-bg rounded-lg border border-ml-border">
+          <div>
+            <div class="font-bold text-sm">Endpoint do Robozim</div>
+            <div class="text-xs text-ml-textMuted font-mono">/api/produtos_pool</div>
+          </div>
+          <span class="text-ml-success font-bold text-sm">✓ Ouvindo</span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 bg-ml-bg rounded-lg border border-ml-border">
+          <div>
+            <div class="font-bold text-sm">Última Atualização</div>
+            <div class="text-xs text-ml-textMuted font-mono" id="ultimaAtualizacao">--:--:--</div>
+          </div>
+          <button onclick="carregarStats()" class="text-xs bg-ml-primary px-3 py-1 rounded text-white hover:bg-ml-primaryHover">🔄 Atualizar</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-ml-card text-ml-textMuted text-center p-6 mt-8 border-t border-ml-border">
+    <p class="text-sm">aLojinha Admin • Cloudflare Pages + D1 • Tema Azul ML</p>
+    <p class="text-xs mt-1">Feito com 💙 por Luis & Qwen</p>
+  </footer>
+
+  <script>
+    const API_URL = window.location.origin;
+
+    const CANAIS = [
+      "ALojinha", "Achadinhos", "Tech Tudo Ofertas", "Ofertas Gamers",
+      "Promosam", "PromoZanq", "Top Achados", "Pack de Ofertas",
+      "To Sem Kit", "Magalu", "Shopee", "Mercado Livre",
+      "Achadinhos e Influencers Amazon", "Amazon Brasil", "Tech"
+    ];
+
+    function renderCanais() {
+      const container = document.getElementById('canaisList');
+      if(!container) return;
+      container.innerHTML = CANAIS.map((canal, i) => `
+        <div class="flex items-center gap-2 p-2 bg-ml-bg rounded border border-ml-border hover:border-ml-primary transition">
+          <div class="w-2 h-2 rounded-full bg-ml-success animate-pulse"></div>
+          <span class="text-xs font-medium truncate">${canal}</span>
+          <span class="text-[10px] text-ml-textMuted ml-auto">#${i + 1}</span>
+        </div>
+      `).join('');
+    }
+
+    function atualizarRodizio() {
+      const agora = new Date();
+      const bloco4h = Math.floor(agora.getTime() / (4 * 60 * 60 * 1000));
+      const proximoBloco = (bloco4h + 1) * 4 * 60 * 60 * 1000;
+      const tempoRestante = proximoBloco - agora.getTime();
+      
+      const horas = Math.floor(tempoRestante / (1000 * 60 * 60));
+      const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
+      
+      const elBloco = document.getElementById('blocoAtual');
+      const elTroca = document.getElementById('proximaTroca');
+      if(elBloco) elBloco.innerText = `Bloco ${bloco4h % 6}`;
+      if(elTroca) elTroca.innerText = `${horas}h ${minutos}m ${segundos}s`;
+    }
+
+    async function moverProdutos() {
+      const senha = document.getElementById('adminSenha').value;
+      if (!senha) { alert("Senha obrigatória!"); return; }
+
+      const lote = document.getElementById('loteSize').value || 50;
+
+      if (!confirm(`Mover ${lote} produtos do pool para a vitrine?`)) return;
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerText = "⏳ Movendo...";
+      btn.classList.add('opacity-50');
+
+      try {
+        // CORREÇÃO: Rota correta que o worker.js entende
+        const res = await fetch(`${API_URL}/api/mover-pool`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${senha}` 
+          },
+          // CORREÇÃO: Enviando 'qtd' como o worker.js espera
+          body: JSON.stringify({ qtd: lote })
+        });
+
+        const data = await res.json();
+        
+        const resultadoDiv = document.getElementById('resultadoMover');
+        const msgDiv = document.getElementById('msgMover');
+        
+        resultadoDiv.classList.remove('hidden');
+        
+        if (data.error || !data.ok) {
+          msgDiv.classList.remove('text-ml-success');
+          msgDiv.classList.add('text-ml-danger');
+          msgDiv.innerText = "❌ " + (data.error || "Erro ao mover");
+        } else {
+          msgDiv.classList.add('text-ml-success');
+          msgDiv.classList.remove('text-ml-danger');
+          msgDiv.innerText = "✅ " + data.msg;
+          carregarStats(); // Atualiza os números após mover
+        }
+
+      } catch (e) {
+        alert("Erro de rede ao mover: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🚀 MOVER PRODUTOS";
+        btn.classList.remove('opacity-50');
+      }
+    }
+
+    async function carregarStats() {
+      try {
+        // CORREÇÃO: Busca dados REAIS do banco, sem números falsos
+        const res = await fetch(`${API_URL}/api/debug`);
+        const data = await res.json();
+        
+        document.getElementById('totalVitrine').innerText = data.vitrine || 0;
+        document.getElementById('totalPool').innerText = data.pool || 0;
+        document.getElementById('ultimaAtualizacao').innerText = new Date().toLocaleTimeString();
+      } catch (e) {
+        console.error("Erro ao carregar stats:", e);
+        document.getElementById('totalVitrine').innerText = "Erro";
+        document.getElementById('totalPool').innerText = "Erro";
+      }
+    }
+
+    // Inicialização
+    renderCanais();
+    carregarStats();
+    setInterval(atualizarRodizio, 1000);
+    atualizarRodizio();
+  </script>
+</body>
+</html>
