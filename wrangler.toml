@@ -1,6 +1,5 @@
 name = "alojinha"
 main = "worker.js"
-compatibility_date = "2024-01-01"
 
 [[d1_databases]]
 binding = "alojinha"
@@ -8,4 +7,6 @@ database_name = "alojinha"
 database_id = "aca85cb1-0ff7-4c31-91a9-9c82db9ac3cb"
 
 [vars]
-ADMIN_PASSWORD = "alojinha2026"
+AMAZON_TAG = "coloposte-20"
+SHOPEE_AFF_ID = "18338650355"
+MAGALU_STORE = "magazinehdmicroloja"
