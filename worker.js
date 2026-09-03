@@ -42,7 +42,7 @@ var worker_default = {
       }
     }
 
-    if (url.pathname === "/api/produtos") {
+    if (url.pathname === "/api/produtos_pool") {
       try {
         const bloco4h = Math.floor(Date.now() / (4 * 3600 * 1e3));
         const { results } = await db.prepare(
